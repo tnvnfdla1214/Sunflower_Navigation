@@ -94,10 +94,131 @@ Jetpack Navigation은 싱글 액티비티 디자인, 프래그먼트를 적극�
 
 Jetpack Navigation의 디자인은 위와 같이 3개의 화면으로 이루어져있습니다. 그리고 각 화면이동간에 커스텀 anim이 구현되어 있습니다. 또한 넘길 arguments들도 설정되어 있습니다.
 
+또한 커스텀 애니메이션이 구현되어있는 것을 볼 수 있습니다.
+
 ### HomeViewPagerFragment(홈 식물 리스트 프래그먼트 화면) -> PantDetailFragment(식물 상세화면)
 하나만 예시를 들겠습니다.
 
 nav_graph.xml 을 보면 PlantDetailFragment 는 plantId라는 String 타입 매개변수를 전달받습니다.
+
+그리고 HomeViewPager에서는 \<action> 으로 PantDetailFragment 로 Direction이 설정되어 있습니다. 이렇게 설정해놓으면 빌드시 자동으로 NavController에서 네비게이션하는 함수가 만들어집니다.
+
+ ```Kotlin
+ //nav_garden.xml
+    .
+    .
+    <fragment
+        android:id="@+id/plant_detail_fragment"
+        android:name="com.google.samples.apps.sunflower.PlantDetailFragment"
+        android:label="@string/plant_details_title"
+        tools:layout="@layout/fragment_plant_detail">
+
+        <action
+            android:id="@+id/action_plant_detail_fragment_to_gallery_fragment"
+            app:destination="@id/gallery_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="plantId"
+            app:argType="string" />
+    </fragment>
+    .
+    .
+```
+### HomeViewPagerFragment - PlantListFragment - PlantAdapter
+ ```Kotlin
+ //PlantAdapter.kotlin
+class PlantAdapter : ListAdapter<Plant, RecyclerView.ViewHolder>(PlantDiffCallback()) {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return PlantViewHolder(
+            ListItemPlantBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val plant = getItem(position)
+        (holder as PlantViewHolder).bind(plant)
+    }
+
+    class PlantViewHolder(
+        private val binding: ListItemPlantBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.setClickListener {
+                binding.plant?.let { plant ->
+                    navigateToPlant(plant, it)
+                }
+            }
+        }
+
+		// 이 부분을 보면 됩니다. Jetpack Navigation Direction 
+        private fun navigateToPlant(
+            plant: Plant,
+            view: View
+        ) {
+            val direction =
+                HomeViewPagerFragmentDirections.actionViewPagerFragmentToPlantDetailFragment(
+                    plant.plantId
+                )
+            view.findNavController().navigate(direction)
+        }
+
+        fun bind(item: Plant) {
+            binding.apply {
+                plant = item
+                executePendingBindings()
+            }
+        }
+    }
+}
+
+private class PlantDiffCallback : DiffUtil.ItemCallback<Plant>() {
+
+    override fun areItemsTheSame(oldItem: Plant, newItem: Plant): Boolean {
+        return oldItem.plantId == newItem.plantId
+    }
+
+    override fun areContentsTheSame(oldItem: Plant, newItem: Plant): Boolean {
+        return oldItem == newItem
+    }
+}
+```
+ViewPager 안의 PlantListFragment 리사이클러뷰의 PlantAdater 에 아이템 클릭시 식물 상세화면으로 가는 이벤트가 구현되어 있습니다.
+Jetpack Navigation Graph에 의해 자동으로 만들어진 Directions 객체와 action 함수를 통해 프래그먼트간 전환 및 값 전달을 하게 되는 것을 볼 수 있습니다.
+
+![image](https://user-images.githubusercontent.com/48902047/149468142-9c35d991-8c00-4134-b10f-4446af60b5ca.png)
+
+### PlantDetailFragment
+by navArgs 로 값을 전달받는 것을 볼 수 있습니다.
+
+ ```Kotlin
+ //PlantDetailFragment.kotlin
+@AndroidEntryPoint
+class PlantDetailFragment : Fragment() {
+
+    private val args: PlantDetailFragmentArgs by navArgs()
+
+    @Inject
+    lateinit var plantDetailViewModelFactory: PlantDetailViewModelFactory
+
+    private val plantDetailViewModel: PlantDetailViewModel by viewModels {
+        PlantDetailViewModel.provideFactory(plantDetailViewModelFactory, args.plantId)
+    }
+```
+![image](https://user-images.githubusercontent.com/48902047/149468282-0dd3aae8-593d-44bc-a1d2-cb08dad3b0b1.png)
+
+
+
+
+
+
 
 
 
