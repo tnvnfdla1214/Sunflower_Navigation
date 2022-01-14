@@ -6,8 +6,7 @@
 
 Jetpack Navigation은 싱글 액티비티 디자인, 프래그먼트를 적극적으로 활용할때 강한 이점이 있습니다.
 
-## 디자인
-### GardenActivity XML(activity_garden.xml)
+## GardenActivity XML(activity_garden.xml)
 ```Kotlin
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -34,7 +33,7 @@ Jetpack Navigation은 싱글 액티비티 디자인, 프래그먼트를 적극�
   - 뒤로가기 버튼 클릭시 NavHostFragment가 시스템 뒤로 버튼을 가로채 돌아옵니다.(안할 경우 뒤로가기 버튼 클릭시 호스트화면으로 안가고 바로 앱이 종료될 것 입니다.)
   - 하나의 NavHost만 기본값으로 지정할 수 있습니다.
   - 동일한 레이아웃에 여러 호스트가 있다면(예: 창이 2개인 레이아웃) 한 호스트만 기본 NavHost로 지정해야 합니다.
-### NavHostFragment(nav_garden.xml)
+## NavHostFragment(nav_garden.xml)
  ```Kotlin
  //nav_garden.xml
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
@@ -88,7 +87,7 @@ Jetpack Navigation은 싱글 액티비티 디자인, 프래그먼트를 적극�
 ```
 - app:startDestination="@id/view_pager_fragment"
   - FragmentContainerView 에 ViewPager2인 HomeViewPagerFragment가 연결 됩니다.
-### Arguments
+## Arguments
 ![image](https://user-images.githubusercontent.com/48902047/149464156-ff0b9fe9-a755-4e2a-945c-e320a4b91c53.png)
 ![image](https://user-images.githubusercontent.com/48902047/149464448-9b241ea9-d6d0-4566-90bc-0a269de76bba.png)
 
@@ -96,7 +95,7 @@ Jetpack Navigation의 디자인은 위와 같이 3개의 화면으로 이루어�
 
 또한 커스텀 애니메이션이 구현되어있는 것을 볼 수 있습니다.
 
-### HomeViewPagerFragment(홈 식물 리스트 프래그먼트 화면) -> PantDetailFragment(식물 상세화면)
+## HomeViewPagerFragment(홈 식물 리스트 프래그먼트 화면) -> PantDetailFragment(식물 상세화면)
 하나만 예시를 들겠습니다.
 
 nav_graph.xml 을 보면 PlantDetailFragment 는 plantId라는 String 타입 매개변수를 전달받습니다.
@@ -127,7 +126,7 @@ nav_graph.xml 을 보면 PlantDetailFragment 는 plantId라는 String 타입 매
     .
     .
 ```
-### HomeViewPagerFragment - PlantListFragment - PlantAdapter
+## HomeViewPagerFragment - PlantListFragment - PlantAdapter
  ```Kotlin
  //PlantAdapter.kotlin
 class PlantAdapter : ListAdapter<Plant, RecyclerView.ViewHolder>(PlantDiffCallback()) {
@@ -195,7 +194,7 @@ Jetpack Navigation Graph에 의해 자동으로 만들어진 Directions 객체�
 
 ![image](https://user-images.githubusercontent.com/48902047/149468142-9c35d991-8c00-4134-b10f-4446af60b5ca.png)
 
-### PlantDetailFragment
+## PlantDetailFragment
 by navArgs 로 값을 전달받는 것을 볼 수 있습니다.
 
  ```Kotlin
@@ -213,12 +212,3 @@ class PlantDetailFragment : Fragment() {
     }
 ```
 ![image](https://user-images.githubusercontent.com/48902047/149468282-0dd3aae8-593d-44bc-a1d2-cb08dad3b0b1.png)
-
-
-
-
-
-
-
-
-
